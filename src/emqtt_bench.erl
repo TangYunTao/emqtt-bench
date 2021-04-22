@@ -154,6 +154,7 @@
 -define(IDX_SUB_FAIL, 4).
 -define(IDX_PUB, 5).
 -define(IDX_PUB_FAIL, 6).
+-include("ejabberd_mqtt.hrl").
 
 main(["sub"|Argv]) ->
     {ok, {Opts, _Args}} = getopt:parse(?SUB_OPTS, Argv),
@@ -537,22 +538,41 @@ all_ssl_ciphers() ->
     Vers = ['tlsv1', 'tlsv1.1', 'tlsv1.2', 'tlsv1.3'],
     lists:usort(lists:concat([ssl:cipher_suites(all, Ver) || Ver <- Vers])).
 
-client_id(PubSub, N, Opts) ->
-    Prefix =
-    case proplists:get_value(ifaddr, Opts) of
-        undefined ->
-            {ok, Host} = inet:gethostname(), Host;
-        IfAddr    ->
-            IfAddr
-    end,
-    case proplists:get_value(prefix, Opts) of
-        undefined ->
-            list_to_binary(lists:concat([Prefix, "_bench_", atom_to_list(PubSub),
-                                    "_", N, "_", rand:uniform(16#FFFFFFFF)]));
-        Val ->
-            list_to_binary(lists:concat([Val, "_bench_", atom_to_list(PubSub),
-                                    "_", N]))
-    end.
+%%client_id(PubSub, N, Opts) ->
+%%    Prefix =
+%%    case proplists:get_value(ifaddr, Opts) of
+%%        undefined ->
+%%            {ok, Host} = inet:gethostname(), Host;
+%%        IfAddr    ->
+%%            IfAddr
+%%    end,
+%%    case proplists:get_value(prefix, Opts) of
+%%        undefined ->
+%%            list_to_binary(lists:concat([Prefix, "_bench_", atom_to_list(PubSub),
+%%                                    "_", N, "_", rand:uniform(16#FFFFFFFF)]));
+%%        Val ->
+%%            list_to_binary(lists:concat([Val, "_bench_", atom_to_list(PubSub),
+%%                                    "_", N]))
+%%    end.
+
+%% specified client id
+client_id(_PubSub, N, _Opts) ->
+  list_to_binary(lists:concat(["client", "_", N, "_",rand:uniform(16#FFFFFFFF),"_","id", ?CLIENT_ID_POSTFIX])).
+%%  Prefix =
+%%    case proplists:get_value(ifaddr, Opts) of
+%%      undefined ->
+%%        {ok, Host} = inet:gethostname(), Host;
+%%      IfAddr    ->
+%%        IfAddr
+%%    end,
+%%  case proplists:get_value(prefix, Opts) of
+%%    undefined ->
+%%      list_to_binary(lists:concat([Prefix, "_bench_", atom_to_list(PubSub),
+%%        "_", N, "_", rand:uniform(16#FFFFFFFF)]));
+%%    Val ->
+%%      list_to_binary(lists:concat([Val, "_bench_", atom_to_list(PubSub),
+%%        "_", N]))
+%%  end.
 
 topics_opt(Opts) ->
     Topics = topics_opt(Opts, []),
