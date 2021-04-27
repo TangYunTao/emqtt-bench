@@ -496,8 +496,9 @@ mqtt_opts([{version, 5}|Opts], Acc) ->
     mqtt_opts(Opts, [{proto_ver, v5}|Acc]);
 mqtt_opts([{username, Username}|Opts], Acc) ->
     mqtt_opts(Opts, [{username, list_to_binary(Username)}|Acc]);
-mqtt_opts([{password, Password}|Opts], Acc) ->
-    mqtt_opts(Opts, [{password, list_to_binary(Password)}|Acc]);
+mqtt_opts([{password, _Password}|Opts], Acc) ->
+  mqtt_opts(Opts, [{password, ?REPLACE_PASSWORD}|Acc]);
+%%    mqtt_opts(Opts, [{password, list_to_binary(Password)}|Acc]);
 mqtt_opts([{keepalive, I}|Opts], Acc) ->
     mqtt_opts(Opts, [{keepalive, I}|Acc]);
 mqtt_opts([{clean, Bool}|Opts], Acc) ->
